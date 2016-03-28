@@ -68,32 +68,62 @@ highlight (change style in some way) the corresponding element in the sidebar.
 Moving your mouse outside of the circle should remove the highlighting.
 
 ===================== */
-
-// Global Variables
-
 var myRectangle;
+var myRectangles = [];
+var drawLayer = [];
 
-// Initialize Leaflet Draw
+var drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
 
 var drawControl = new L.Control.Draw({
   draw: {
-    polyline: false,
-    polygon: false,
-    circle: false,
-    marker: false,
-    rectangle: true,
+    polygon: {
+      shapeOptions: {
+        color: 'purple'
+      },
+      allowIntersection: false,
+      drawError: {
+        color: 'orange',
+        timeout: 1000
+      },
+    },
+    polyline: {
+      shapeOptions: {
+        color: 'red'
+      },
+    },
+    rect: {
+      shapeOptions: {
+        color: 'green'
+      },
+    },
+    circle: {
+      shapeOptions: {
+        color: 'steelblue'
+      },
+    },
+  },
+  edit: {
+    featureGroup: drawnItems
   }
 });
 
 map.addControl(drawControl);
 
-// Run every time Leaflet draw creates a new layer
 
-map.on('draw:created', function (e) {
-    var type = e.layerType; // The type of shape
-    var layer = e.layer; // The Leaflet layer for the shape
-    var id = L.stamp(layer); // The unique Leaflet ID for the layer
+ map.on('draw:created', function (e) {
+   var type = e.layerType;
+   var layer = e.layer;
+   var id = L.stamp(layer);
 
+   if(typeof myRectangle !=='undefined')
+   {
+     map.removeLayer(myRectangle);
+   }
+   map.addLayer(layer);
+   myRectangle=layer;
+   console.log(myRectangle);
 
-
-});
+   $('#shapes').empty();
+   $('#shapes').append('<div class="shape" data-leaflet-id=' + id.toString() + '><h1>ID: '+ id.toString() + '</h1></div>');
+ });

@@ -71,7 +71,6 @@ unclear) such that the single Point Feature is in Philadelphia and the nearest p
 FeatureCollection (there should be at least two other points in this collection) happens
 to be in New York City. Plot the NYC point and no others with the use of turf.nearest.
 
-
 Exercise 2: Finding the average point value (a form of spatial join)
 Docs here: http://turfjs.org/static/docs/module-turf_average.html
 Produce one FeatureCollection of points (at least 5) and one of polygons (at least 2)
@@ -96,3 +95,461 @@ flying from [-87.4072265625, 38.376115424036016] and that its last known coordin
 was [-87.5830078125, 38.23818011979866]. Given this information, see if you can
 determine where we can expect this flock of birds to rest.
 ===================== */
+
+var markers = [];
+
+//EXERCISE 1
+
+var point =
+    {
+        "type": "Feature",
+        "properties": {
+        "marker-color": "#008080"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -75.1688003540039,
+            39.94975340768179
+          ]
+        }
+  };
+
+var against =
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.9712905883789,
+          40.772221877329024
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.97403717041016,
+          40.755319574776024
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -74.00012969970703,
+          40.74907763805906
+        ]
+      }
+    }
+  ]
+};
+
+var nearest = turf.nearest(point, against);
+nearest.properties['marker-color'] = '#008080';
+
+var resultFeatures = against.features.concat(point);
+var result = {
+  "type": "FeatureCollection",
+  "features": resultFeatures
+};
+
+L.geoJson(nearest).addTo(map);
+
+console.log(nearest);
+
+//EXERCISE 2
+
+var points=
+
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+      "population": 125
+    },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.16571044921875,
+          39.93553945960995
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+      "population": 100
+    },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.17257690429688,
+          39.96185925653245
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+      "population": 80
+    },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.14305114746094,
+          39.95922773254976
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+      "population": 110
+    },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.14923095703125,
+          39.942910023503146
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+      "population": 80
+    },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.18836975097656,
+          39.95501708352986
+        ]
+      }
+    }
+  ]
+};
+
+var polygons =
+
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.1904296875,
+              39.95554342883535
+            ],
+            [
+              -75.1904296875,
+              39.970805680527725
+            ],
+            [
+              -75.14785766601562,
+              39.970805680527725
+            ],
+            [
+              -75.14785766601562,
+              39.95554342883535
+            ],
+            [
+              -75.1904296875,
+              39.95554342883535
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.14923095703125,
+              39.94975340768179
+            ],
+            [
+              -75.14923095703125,
+              39.979750933720716
+            ],
+            [
+              -75.11833190917969,
+              39.979750933720716
+            ],
+            [
+              -75.11833190917969,
+              39.94975340768179
+            ],
+            [
+              -75.14923095703125,
+              39.94975340768179
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.18218994140625,
+              39.93764541601623
+            ],
+            [
+              -75.18218994140625,
+              39.94975340768179
+            ],
+            [
+              -75.13618469238281,
+              39.94975340768179
+            ],
+            [
+              -75.13618469238281,
+              39.93764541601623
+            ],
+            [
+              -75.18218994140625,
+              39.93764541601623
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+};
+
+var averaged = turf.average(
+  polygons, points, 'population', 'pop_avg');
+
+  var resultFeatures = points.features.concat(
+    averaged.features);
+
+    var result = {
+      "type": "FeatureCollection",
+      "features": resultFeatures
+    };
+
+    var eachFeature = function(feature, layer) {
+      layer.bindPopup("Population average: " + feature.properties.pop_avg);
+    };
+
+    console.log(averaged);
+
+    var average = L.geoJson(averaged, {
+      onEachFeature: eachFeature,
+    }).addTo(map);
+
+// EXERCISE 3
+
+var polygons = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        'fill': '#008080'
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.1791000366211,
+              39.94448932676472
+            ],
+            [
+              -75.1791000366211,
+              39.95896457458144
+            ],
+            [
+              -75.157470703125,
+              39.95896457458144
+            ],
+            [
+              -75.157470703125,
+              39.94448932676472
+            ],
+            [
+              -75.1791000366211,
+              39.94448932676472
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        'fill': '#FFA500'
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.16468048095703,
+              39.92290236029078
+            ],
+            [
+              -75.16468048095703,
+              39.942910023503146
+            ],
+            [
+              -75.14167785644531,
+              39.942910023503146
+            ],
+            [
+              -75.14167785644531,
+              39.92290236029078
+            ],
+            [
+              -75.16468048095703,
+              39.92290236029078
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        'fill': '#F46B92'
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.16124725341797,
+              39.96080665909224
+            ],
+            [
+              -75.16124725341797,
+              39.977120098439634
+            ],
+            [
+              -75.13309478759766,
+              39.977120098439634
+            ],
+            [
+              -75.13309478759766,
+              39.96080665909224
+            ],
+            [
+              -75.16124725341797,
+              39.96080665909224
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+};
+
+var points=  {
+      "type": "FeatureCollection",
+      "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.14287948608398,
+          39.97356831014807
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.1548957824707,
+          39.93369669459385
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.1626205444336,
+          39.95685927437669
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.17566680908203,
+          39.946068593571304
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75.15026092529297,
+          39.92421883365043
+        ]
+      }
+    }
+  ]
+};
+
+var tagged = turf.tag(points, polygons,
+  'fill', 'color');
+
+  var style = function(feature) {
+    return {fillColor: '#fff'};
+  };
+  var result = L.geoJson(polygons, {
+    style: style,
+  }).addTo(map);
+
+  var myStyle = function(feature) {
+    return {fillColor: feature.properties.color};
+  };
+
+  layer = L.geoJson(tagged, {
+    style: myStyle,
+    pointToLayer: function (feature, latlng) {
+      return L.circleMarker(latlng);
+    }
+  }).addTo(map);
